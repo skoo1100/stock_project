@@ -1,3 +1,3 @@
 export const QUERY_KEY = {
-  stockInfo: 'stockInfo',
+  periodStockInfo: 'periodStockInfo',
 } as const;

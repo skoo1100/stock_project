@@ -27,8 +27,10 @@
     "paths": {
       "@apis/*": ["src/apis/*"],
       "@assets/*": ["src/assets/*"],
+      "@components/*": ["src/components/*"],
       "@constants/*": ["src/constants/*"],
       "@hooks/*": ["src/hooks/*"],
+      "@json/*": ["src/json/*"],
       "@pages/*": ["src/pages/*"],
       "@utils/*": ["src/utils/*"],
       "@/*": ["src/*"]
