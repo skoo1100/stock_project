@@ -1,5 +1,4 @@
 import { useQuery } from '@tanstack/react-query';
-import { QUERY_KEY } from '@constants/query-key';
 import stockRequest from '@apis/stock-request';
 
 export const usePeriodStockQuery = (
@@ -11,7 +10,7 @@ export const usePeriodStockQuery = (
   stockType?: string,
 ) => {
   const query = useQuery({
-    queryKey: [QUERY_KEY.periodStockInfo],
+    queryKey: [stockCode, startDate, endDate, stockPriceType, periodType, stockType],
     queryFn: async () =>
       await stockRequest.fetchPeriodStock(stockCode, startDate, endDate, stockPriceType, periodType, stockType),
   });

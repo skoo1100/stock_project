@@ -6,26 +6,27 @@ import StockChart from '@components/stock-chart';
 import StockSearch from '@components/stock-search';
 
 function Test() {
-  //const accessToken = useSetAccessTokenCookie();  // 인증 토큰
+  //const accessToken = useSetAccessTokenCookie(); // 인증 토큰
   //const approvalKey = useSetApprovalKeyCookie();  // 웹소켓 접속 키
 
   //const { ws, error, messages } = useWebSocket();
 
-  const { data, isLoading, isError, error } = usePeriodStockQuery('000020', '20220411', '20220509');
+  //const { data, isLoading, isError, error } = usePeriodStockQuery('010140', '20220411', '20220509');
 
-  console.log(data);
+  //console.log(data);
 
   return (
     <div>
-      {/*
+      {/* 
       <ul>
         {messages.map((msg: string, index: number) => (
           <li key={index}>{msg}</li>
         ))}
       </ul>
       */}
+
       <StockSearch />
-      <StockChart stockData={data} />
+      {/*<StockChart stockData={data} />*/}
     </div>
   );
 }
