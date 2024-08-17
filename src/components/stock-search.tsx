@@ -12,8 +12,23 @@ type StockDataType =
     }
   | undefined;
 
+type OptionType = {
+  priceType: '0' | '1'; // 0: 원주가, 1: 수정주가
+  periodType: 'D' | 'W' | 'M' | 'Y'; // D: Day, W: Week, M: Month, Y: Year
+  stockType: 'J' | 'ETF' | 'ETN'; // J: 주식, ETF: ETF, ETN: ETN
+};
+
 const StockSearch = () => {
   const [search, setSearch] = useState('');
+  const [date, setDate] = useState({
+    start: '',
+    end: '',
+  });
+  const [option, setOption] = useState<OptionType>({
+    priceType: '0',
+    periodType: 'M',
+    stockType: 'J',
+  });
   const [stockData, setStockData] = useState<StockDataType>({
     kospi: kospiData,
     kosdaq: kosdaqData,
@@ -44,14 +59,51 @@ const StockSearch = () => {
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const textValue = e.target.value.trim();
+    console.log(textValue);
     setSearch(textValue);
     debouncedUpdateSearch(textValue);
+  };
+
+  const handleStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDate((prev) => ({
+      ...prev,
+      start: e.target.value,
+      end: prev.end < e.target.value ? e.target.value : prev.end,
+    }));
+  };
+
+  const handleEndDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDate({ ...date, end: e.target.value });
+  };
+
+  const handleOptionChange = (type: keyof OptionType, value: OptionType[keyof OptionType]) => {
+    setOption((prev) => ({
+      ...prev,
+      [type]: value,
+    }));
   };
 
   return (
     <>
       <input type="text" value={search} onChange={handleSearchChange} />
-      <StockSearchResult stockData={stockData} />
+      <input type="date" value={date.start} onChange={handleStartDateChange} />
+      <input type="date" value={date.end} onChange={handleEndDateChange} min={date.start} />
+      <div>
+        <button onClick={() => handleOptionChange('priceType', '0')}>수정주가</button>
+        <button onClick={() => handleOptionChange('priceType', '1')}>원주가</button>
+      </div>
+      <div>
+        <button onClick={() => handleOptionChange('periodType', 'D')}>Day</button>
+        <button onClick={() => handleOptionChange('periodType', 'W')}>Week</button>
+        <button onClick={() => handleOptionChange('periodType', 'M')}>Month</button>
+        <button onClick={() => handleOptionChange('periodType', 'Y')}>Year</button>
+      </div>
+      <div>
+        <button onClick={() => handleOptionChange('stockType', 'J')}>J</button>
+        <button onClick={() => handleOptionChange('stockType', 'ETF')}>ETF</button>
+        <button onClick={() => handleOptionChange('stockType', 'ETN')}>ETN</button>
+      </div>
+      <StockSearchResult stockData={stockData} date={date} option={option} />
     </>
   );
 };

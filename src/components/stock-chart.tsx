@@ -68,7 +68,7 @@ const StockChart = ({ stockData }: StockChartProps) => {
           },
         },
         grid: {
-          show: false,
+          show: true,
         },
         plotOptions: {
           candlestick: {
@@ -89,6 +89,7 @@ const StockChart = ({ stockData }: StockChartProps) => {
           },
         },
         yaxis: {
+          tickAmount: 5,
           labels: {
             style: {
               colors: '#0c0c0c',
@@ -102,10 +103,10 @@ const StockChart = ({ stockData }: StockChartProps) => {
           shared: false,
           intersect: true,
           fixed: {
-            enabled: true, // 툴팁 고정 여부
-            position: 'topRight', // 고정 위치
-            offsetX: 100, // x축 오프셋
-            offsetY: 0, // y축 오프셋
+            enabled: true,
+            position: 'topRight',
+            offsetX: 100,
+            offsetY: 0,
           },
           theme: 'dark',
           style: {

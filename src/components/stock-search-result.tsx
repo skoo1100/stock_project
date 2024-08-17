@@ -1,7 +1,8 @@
+import { useState } from 'react';
 import { usePeriodStockQuery } from '@hooks/react-query/use-query-stock';
 import { KospiDataType, KosdaqDataType } from '@json/json-type';
+import { formatDateToYYYYMMDD } from '@utils/format-date';
 import StockChart from './stock-chart';
-import { useState } from 'react';
 
 type StockSearchResultProps = {
   stockData:
@@ -10,18 +11,32 @@ type StockSearchResultProps = {
         kosdaq: KosdaqDataType[];
       }
     | undefined;
+  date: {
+    start: string;
+    end: string;
+  };
+  option: {
+    priceType: '0' | '1'; // 0: 원주가, 1: 수정주가
+    periodType: 'D' | 'W' | 'M' | 'Y'; // D: Day, W: Week, M: Month, Y: Year
+    stockType: 'J' | 'ETF' | 'ETN'; // J: 주식, ETF: ETF, ETN: ETN
+  };
 };
 
-const StockSearchResult = ({ stockData }: StockSearchResultProps) => {
+const StockSearchResult = ({ stockData, date, option }: StockSearchResultProps) => {
   const [stockCode, setStockCode] = useState('010140');
 
-  const { data, isLoading, isError, error } = usePeriodStockQuery(stockCode, '20220411', '20220509');
+  const { data, isLoading, isError, error } = usePeriodStockQuery(
+    stockCode,
+    formatDateToYYYYMMDD(date.start),
+    formatDateToYYYYMMDD(date.end),
+    option.priceType,
+    option.periodType,
+    option.stockType,
+  );
 
   const handleStockCodeClick = (code: string) => {
     setStockCode(code);
   };
-  console.log(stockCode);
-  console.log(data);
 
   return (
     <>
