@@ -1,14 +1,15 @@
 import { useState, useCallback } from 'react';
 import { debounce } from 'lodash';
-import { KospiDataType, KosdaqDataType } from '@json/json-type';
+import { StockJSONType } from '@json/json-type';
 import kospiData from '@json/kospi.json';
 import kosdaqData from '@json/kosdaq.json';
 import StockSearchResult from './stock-search-result';
+import StockChart from './stock-chart';
 
 type StockDataType =
   | {
-      kospi: KospiDataType[];
-      kosdaq: KosdaqDataType[];
+      kospi: StockJSONType[];
+      kosdaq: StockJSONType[];
     }
   | undefined;
 
@@ -20,6 +21,14 @@ type OptionType = {
 
 const StockSearch = () => {
   const [search, setSearch] = useState('');
+  const [stockDataList, setStockDataList] = useState<StockDataType>({
+    kospi: kospiData,
+    kosdaq: kosdaqData,
+  });
+  const [stockData, setStockData] = useState<StockJSONType>({
+    종목코드: '',
+    종목명: '',
+  });
   const [date, setDate] = useState({
     start: '',
     end: '',
@@ -28,10 +37,6 @@ const StockSearch = () => {
     priceType: '0',
     periodType: 'M',
     stockType: 'J',
-  });
-  const [stockData, setStockData] = useState<StockDataType>({
-    kospi: kospiData,
-    kosdaq: kosdaqData,
   });
 
   const updateSearch = (value: string) => {
@@ -44,7 +49,7 @@ const StockSearch = () => {
       return item.종목명.toLowerCase().includes(value.toLowerCase());
     });
 
-    setStockData({
+    setStockDataList({
       kospi: filteredKospi,
       kosdaq: filteredKosdaq,
     });
@@ -59,7 +64,6 @@ const StockSearch = () => {
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const textValue = e.target.value.trim();
-    console.log(textValue);
     setSearch(textValue);
     debouncedUpdateSearch(textValue);
   };
@@ -84,27 +88,34 @@ const StockSearch = () => {
   };
 
   return (
-    <>
-      <input type="text" value={search} onChange={handleSearchChange} />
-      <input type="date" value={date.start} onChange={handleStartDateChange} />
-      <input type="date" value={date.end} onChange={handleEndDateChange} min={date.start} />
+    <div style={{ display: 'flex' }}>
       <div>
-        <button onClick={() => handleOptionChange('priceType', '0')}>수정주가</button>
-        <button onClick={() => handleOptionChange('priceType', '1')}>원주가</button>
+        <input type="text" value={search} onChange={handleSearchChange} />
+        <input type="date" value={date.start} onChange={handleStartDateChange} />
+        <input type="date" value={date.end} onChange={handleEndDateChange} min={date.start} />
+        <div>
+          <button onClick={() => handleOptionChange('priceType', '0')}>수정주가</button>
+          <button onClick={() => handleOptionChange('priceType', '1')}>원주가</button>
+        </div>
+        <div>
+          <button onClick={() => handleOptionChange('periodType', 'D')}>일</button>
+          <button onClick={() => handleOptionChange('periodType', 'W')}>주</button>
+          <button onClick={() => handleOptionChange('periodType', 'M')}>월</button>
+          <button onClick={() => handleOptionChange('periodType', 'Y')}>년</button>
+        </div>
+        <div>
+          <button onClick={() => handleOptionChange('stockType', 'J')}>주식</button>
+          <button onClick={() => handleOptionChange('stockType', 'ETF')}>ETF</button>
+          <button onClick={() => handleOptionChange('stockType', 'ETN')}>ETN</button>
+        </div>
+        <div>
+          <StockSearchResult stockDataList={stockDataList} setStockData={setStockData} />
+        </div>
       </div>
-      <div>
-        <button onClick={() => handleOptionChange('periodType', 'D')}>Day</button>
-        <button onClick={() => handleOptionChange('periodType', 'W')}>Week</button>
-        <button onClick={() => handleOptionChange('periodType', 'M')}>Month</button>
-        <button onClick={() => handleOptionChange('periodType', 'Y')}>Year</button>
+      <div style={{ width: 400 }}>
+        <StockChart stockData={stockData} date={date} option={option} />
       </div>
-      <div>
-        <button onClick={() => handleOptionChange('stockType', 'J')}>J</button>
-        <button onClick={() => handleOptionChange('stockType', 'ETF')}>ETF</button>
-        <button onClick={() => handleOptionChange('stockType', 'ETN')}>ETN</button>
-      </div>
-      <StockSearchResult stockData={stockData} date={date} option={option} />
-    </>
+    </div>
   );
 };
 

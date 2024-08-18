@@ -1,28 +1,34 @@
 import ApexCharts from 'react-apexcharts';
+import { usePeriodStockQuery } from '@hooks/react-query/use-query-stock';
+import { formatDateToYYYYMMDD, formatYYYYMMDDToDate } from '@utils/format-date';
+import { StockJSONType } from '@json/json-type';
 
 type StockChartProps = {
-  stockData?: {
-    output1: {
-      hts_kor_isnm: string;
-    };
-    output2: {
-      stck_bsop_date: string; //날짜
-      stck_clpr: string; //종가
-      stck_hgpr: string; //최고가
-      stck_lwpr: string; //최저가
-      stck_oprc: string; //시가
-    }[];
+  stockData: StockJSONType;
+  date?: {
+    start: string;
+    end: string;
+  };
+  option: {
+    priceType: '0' | '1'; // 0: 원주가, 1: 수정주가
+    periodType: 'D' | 'W' | 'M' | 'Y'; // D: Day, W: Week, M: Month, Y: Year
+    stockType: 'J' | 'ETF' | 'ETN'; // J: 주식, ETF: ETF, ETN: ETN
   };
 };
 
-const StockChart = ({ stockData }: StockChartProps) => {
-  const formatDate = (dateString: string) => {
-    // YYYYMMDD 형식을 YYYY-MM-DD로 변환
-    return `${dateString.substring(0, 4)}-${dateString.substring(4, 6)}-${dateString.substring(6)}`;
-  };
-  const seriesData = stockData?.output2
+const StockChart = ({ stockData, date, option }: StockChartProps) => {
+  const { data: PeriodStockData } = usePeriodStockQuery(
+    stockData.종목코드 ? stockData.종목코드 : '',
+    formatDateToYYYYMMDD(date?.start),
+    formatDateToYYYYMMDD(date?.end),
+    option.priceType,
+    option.periodType,
+    option.stockType,
+  );
+
+  const seriesData = PeriodStockData?.output2
     .map((data) => ({
-      x: formatDate(data.stck_bsop_date),
+      x: formatYYYYMMDDToDate(data.stck_bsop_date),
       y: [Number(data.stck_oprc), Number(data.stck_hgpr), Number(data.stck_lwpr), Number(data.stck_clpr)],
     }))
     .sort((a, b) => new Date(a.x).getTime() - new Date(b.x).getTime());
@@ -40,8 +46,8 @@ const StockChart = ({ stockData }: StockChartProps) => {
           mode: 'dark',
         },
         chart: {
-          height: 600,
-          width: 1000,
+          height: '100%',
+          width: '100%',
           toolbar: {
             tools: {
               download: false,
@@ -56,7 +62,7 @@ const StockChart = ({ stockData }: StockChartProps) => {
           background: 'transparent',
         },
         title: {
-          text: stockData?.output1.hts_kor_isnm,
+          text: PeriodStockData?.output1.hts_kor_isnm,
           align: 'center',
           margin: 0,
           offsetX: 0,

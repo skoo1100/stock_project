@@ -1,62 +1,39 @@
-import { useState } from 'react';
-import { usePeriodStockQuery } from '@hooks/react-query/use-query-stock';
-import { KospiDataType, KosdaqDataType } from '@json/json-type';
-import { formatDateToYYYYMMDD } from '@utils/format-date';
-import StockChart from './stock-chart';
+import { SetStateAction } from 'react';
+import { StockJSONType } from '@json/json-type';
 
 type StockSearchResultProps = {
-  stockData:
+  stockDataList:
     | {
-        kospi: KospiDataType[];
-        kosdaq: KosdaqDataType[];
+        kospi: StockJSONType[];
+        kosdaq: StockJSONType[];
       }
     | undefined;
-  date: {
-    start: string;
-    end: string;
-  };
-  option: {
-    priceType: '0' | '1'; // 0: 원주가, 1: 수정주가
-    periodType: 'D' | 'W' | 'M' | 'Y'; // D: Day, W: Week, M: Month, Y: Year
-    stockType: 'J' | 'ETF' | 'ETN'; // J: 주식, ETF: ETF, ETN: ETN
-  };
+  setStockData: React.Dispatch<SetStateAction<StockJSONType>>;
 };
 
-const StockSearchResult = ({ stockData, date, option }: StockSearchResultProps) => {
-  const [stockCode, setStockCode] = useState('010140');
-
-  const { data, isLoading, isError, error } = usePeriodStockQuery(
-    stockCode,
-    formatDateToYYYYMMDD(date.start),
-    formatDateToYYYYMMDD(date.end),
-    option.priceType,
-    option.periodType,
-    option.stockType,
-  );
-
-  const handleStockCodeClick = (code: string) => {
-    setStockCode(code);
+const StockSearchResult = ({ stockDataList, setStockData }: StockSearchResultProps) => {
+  const handleStockCodeClick = (code: StockJSONType) => {
+    setStockData(code);
   };
 
   return (
     <>
       <ul>
-        {/* 코스피 */}
-        {stockData &&
-          stockData.kospi.map((item) => (
+        {/* Kospi */}
+        {stockDataList &&
+          stockDataList.kospi.map((item) => (
             <li key={`kospi-${item.종목코드}`}>
-              <button onClick={() => handleStockCodeClick(item.종목코드)}>{item.종목명}</button>
+              <button onClick={() => handleStockCodeClick(item)}>{item.종목명}</button>
             </li>
           ))}
-        {/* 코스닥 */}
-        {stockData &&
-          stockData.kosdaq.map((item) => (
+        {/* Kosdac */}
+        {stockDataList &&
+          stockDataList.kosdaq.map((item) => (
             <li key={`kosdac-${item.종목코드}`}>
-              <button onClick={() => handleStockCodeClick(item.종목코드)}>{item.종목명}</button>
+              <button onClick={() => handleStockCodeClick(item)}>{item.종목명}</button>
             </li>
           ))}
       </ul>
-      <StockChart stockData={data} />
     </>
   );
 };

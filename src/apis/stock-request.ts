@@ -3,8 +3,8 @@ import axios from '@apis/axios';
 const stockRequest = {
   fetchPeriodStock: async (
     stockCode: string, //종목 코드
-    startDate: string, // 조회 시작날짜
-    endDate: string, // 조회 종료날짜
+    startDate?: string, // 조회 시작날짜
+    endDate?: string, // 조회 종료날짜
     stockPriceType: string = '0', // 0:수정주가, 1:원주가
     periodType: string = 'D', // D: 일봉, W: 주봉, M: 월봉, Y: 년봉
     stockType: string = 'J', // J : 주식, ETF, ETN
