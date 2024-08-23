@@ -1,17 +1,23 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, SetStateAction } from 'react';
 import { debounce } from 'lodash';
 import { StockJSONType } from '@json/json-type';
 import kospiData from '@json/kospi.json';
 import kosdaqData from '@json/kosdaq.json';
+import etfData from '@json/etf.json';
 import StockSearchResult from './stock-search-result';
-import StockChart from './stock-chart';
 
-type StockDataType =
+type StockDataListType =
   | {
-      kospi: StockJSONType[];
-      kosdaq: StockJSONType[];
+      kospi?: StockJSONType[];
+      kosdaq?: StockJSONType[];
+      etf: StockJSONType[];
     }
   | undefined;
+
+type DateType = {
+  start: string;
+  end: string;
+};
 
 type OptionType = {
   priceType: '0' | '1'; // 0: 원주가, 1: 수정주가
@@ -19,24 +25,23 @@ type OptionType = {
   stockType: 'J' | 'ETF' | 'ETN'; // J: 주식, ETF: ETF, ETN: ETN
 };
 
-const StockSearch = () => {
+type StockDataType = {
+  first: StockJSONType;
+  second: StockJSONType;
+  date: DateType;
+  option: OptionType;
+};
+
+type StockSearchProps = {
+  stockData: StockDataType;
+  setStockData: React.Dispatch<SetStateAction<StockDataType>>;
+  choice: 'first' | 'second';
+};
+
+const StockSearch = ({ stockData, setStockData, choice }: StockSearchProps) => {
   const [search, setSearch] = useState('');
-  const [stockDataList, setStockDataList] = useState<StockDataType>({
-    kospi: kospiData,
-    kosdaq: kosdaqData,
-  });
-  const [stockData, setStockData] = useState<StockJSONType>({
-    종목코드: '',
-    종목명: '',
-  });
-  const [date, setDate] = useState({
-    start: '',
-    end: '',
-  });
-  const [option, setOption] = useState<OptionType>({
-    priceType: '0',
-    periodType: 'M',
-    stockType: 'J',
+  const [stockDataList, setStockDataList] = useState<StockDataListType>({
+    etf: etfData,
   });
 
   const updateSearch = (value: string) => {
@@ -49,9 +54,12 @@ const StockSearch = () => {
       return item.종목명.toLowerCase().includes(value.toLowerCase());
     });
 
+    const filteredEtf = etfData.filter((item) => {
+      return item.종목명.toLowerCase().includes(value.toLowerCase());
+    });
+
     setStockDataList({
-      kospi: filteredKospi,
-      kosdaq: filteredKosdaq,
+      etf: filteredEtf,
     });
   };
 
@@ -69,51 +77,57 @@ const StockSearch = () => {
   };
 
   const handleStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setDate((prev) => ({
+    setStockData((prev) => ({
       ...prev,
-      start: e.target.value,
-      end: prev.end < e.target.value ? e.target.value : prev.end,
+      date: {
+        start: e.target.value,
+        end: prev.date.end < e.target.value ? e.target.value : prev.date.end,
+      },
     }));
   };
 
   const handleEndDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setDate({ ...date, end: e.target.value });
+    setStockData((prev) => ({
+      ...prev,
+      date: {
+        ...prev.date,
+        end: e.target.value,
+      },
+    }));
   };
 
   const handleOptionChange = (type: keyof OptionType, value: OptionType[keyof OptionType]) => {
-    setOption((prev) => ({
+    setStockData((prev) => ({
       ...prev,
-      [type]: value,
+      option: {
+        ...prev.option,
+        [type]: value,
+      },
     }));
   };
 
   return (
-    <div style={{ display: 'flex' }}>
+    <div>
+      <input type="text" value={search} onChange={handleSearchChange} />
+      <input type="date" value={stockData.date.start} onChange={handleStartDateChange} />
+      <input type="date" value={stockData.date.end} onChange={handleEndDateChange} min={stockData.date.start} />
       <div>
-        <input type="text" value={search} onChange={handleSearchChange} />
-        <input type="date" value={date.start} onChange={handleStartDateChange} />
-        <input type="date" value={date.end} onChange={handleEndDateChange} min={date.start} />
-        <div>
-          <button onClick={() => handleOptionChange('priceType', '0')}>수정주가</button>
-          <button onClick={() => handleOptionChange('priceType', '1')}>원주가</button>
-        </div>
-        <div>
-          <button onClick={() => handleOptionChange('periodType', 'D')}>일</button>
-          <button onClick={() => handleOptionChange('periodType', 'W')}>주</button>
-          <button onClick={() => handleOptionChange('periodType', 'M')}>월</button>
-          <button onClick={() => handleOptionChange('periodType', 'Y')}>년</button>
-        </div>
-        <div>
-          <button onClick={() => handleOptionChange('stockType', 'J')}>주식</button>
-          <button onClick={() => handleOptionChange('stockType', 'ETF')}>ETF</button>
-          <button onClick={() => handleOptionChange('stockType', 'ETN')}>ETN</button>
-        </div>
-        <div>
-          <StockSearchResult stockDataList={stockDataList} setStockData={setStockData} />
-        </div>
+        <button onClick={() => handleOptionChange('priceType', '0')}>수정주가</button>
+        <button onClick={() => handleOptionChange('priceType', '1')}>원주가</button>
       </div>
-      <div style={{ width: 400 }}>
-        <StockChart stockData={stockData} date={date} option={option} />
+      <div>
+        <button onClick={() => handleOptionChange('periodType', 'D')}>일</button>
+        <button onClick={() => handleOptionChange('periodType', 'W')}>주</button>
+        <button onClick={() => handleOptionChange('periodType', 'M')}>월</button>
+        <button onClick={() => handleOptionChange('periodType', 'Y')}>년</button>
+      </div>
+      <div>
+        <button onClick={() => handleOptionChange('stockType', 'J')}>주식</button>
+        <button onClick={() => handleOptionChange('stockType', 'ETF')}>ETF</button>
+        <button onClick={() => handleOptionChange('stockType', 'ETN')}>ETN</button>
+      </div>
+      <div>
+        <StockSearchResult stockDataList={stockDataList} setStockData={setStockData} choice={choice} />
       </div>
     </div>
   );

@@ -7,7 +7,7 @@ const stockRequest = {
     endDate?: string, // 조회 종료날짜
     stockPriceType: string = '0', // 0:수정주가, 1:원주가
     periodType: string = 'D', // D: 일봉, W: 주봉, M: 월봉, Y: 년봉
-    stockType: string = 'J', // J : 주식, ETF, ETN
+    stockType: string = 'ETF', // J : 주식, ETF, ETN
   ) => {
     try {
       const { data } = await axios.get('/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice', {
