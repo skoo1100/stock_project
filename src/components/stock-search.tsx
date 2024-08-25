@@ -1,36 +1,10 @@
 import { useState, useCallback, SetStateAction } from 'react';
 import { debounce } from 'lodash';
-import { StockJSONType } from '@json/json-type';
-import kospiData from '@json/kospi.json';
-import kosdaqData from '@json/kosdaq.json';
+import { OptionType, StockDataType, StockDataListType } from '@type/stock-type';
+//import kospiData from '@json/kospi.json';
+//import kosdaqData from '@json/kosdaq.json';
 import etfData from '@json/etf.json';
 import StockSearchResult from './stock-search-result';
-
-type StockDataListType =
-  | {
-      kospi?: StockJSONType[];
-      kosdaq?: StockJSONType[];
-      etf: StockJSONType[];
-    }
-  | undefined;
-
-type DateType = {
-  start: string;
-  end: string;
-};
-
-type OptionType = {
-  priceType: '0' | '1'; // 0: 원주가, 1: 수정주가
-  periodType: 'D' | 'W' | 'M' | 'Y'; // D: Day, W: Week, M: Month, Y: Year
-  stockType: 'J' | 'ETF' | 'ETN'; // J: 주식, ETF: ETF, ETN: ETN
-};
-
-type StockDataType = {
-  first: StockJSONType;
-  second: StockJSONType;
-  date: DateType;
-  option: OptionType;
-};
 
 type StockSearchProps = {
   stockData: StockDataType;
@@ -41,10 +15,13 @@ type StockSearchProps = {
 const StockSearch = ({ stockData, setStockData, choice }: StockSearchProps) => {
   const [search, setSearch] = useState('');
   const [stockDataList, setStockDataList] = useState<StockDataListType>({
+    //kospi: kospiData,
+    //kosdaq: kosdaqData,
     etf: etfData,
   });
 
   const updateSearch = (value: string) => {
+    /*
     const filteredKospi = kospiData.filter((item) => {
       const itemName = item.종목명 || '';
       return itemName.toLowerCase().includes(value.toLowerCase());
@@ -53,6 +30,7 @@ const StockSearch = ({ stockData, setStockData, choice }: StockSearchProps) => {
     const filteredKosdaq = kosdaqData.filter((item) => {
       return item.종목명.toLowerCase().includes(value.toLowerCase());
     });
+    */
 
     const filteredEtf = etfData.filter((item) => {
       return item.종목명.toLowerCase().includes(value.toLowerCase());
@@ -120,11 +98,6 @@ const StockSearch = ({ stockData, setStockData, choice }: StockSearchProps) => {
         <button onClick={() => handleOptionChange('periodType', 'W')}>주</button>
         <button onClick={() => handleOptionChange('periodType', 'M')}>월</button>
         <button onClick={() => handleOptionChange('periodType', 'Y')}>년</button>
-      </div>
-      <div>
-        <button onClick={() => handleOptionChange('stockType', 'J')}>주식</button>
-        <button onClick={() => handleOptionChange('stockType', 'ETF')}>ETF</button>
-        <button onClick={() => handleOptionChange('stockType', 'ETN')}>ETN</button>
       </div>
       <div>
         <StockSearchResult stockDataList={stockDataList} setStockData={setStockData} choice={choice} />

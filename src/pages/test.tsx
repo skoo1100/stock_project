@@ -5,29 +5,13 @@ import { usePeriodStockQuery } from '@hooks/react-query/use-query-stock';
 import ApexCharts from 'apexcharts';
 import StockChart from '@components/stock-chart';
 import StockSearch from '@components/stock-search';
-import { StockJSONType } from '@json/json-type';
-
-type DateType = {
-  start: string;
-  end: string;
-};
-
-type OptionType = {
-  priceType: '0' | '1'; // 0: 원주가, 1: 수정주가
-  periodType: 'D' | 'W' | 'M' | 'Y'; // D: Day, W: Week, M: Month, Y: Year
-  stockType: 'J' | 'ETF' | 'ETN'; // J: 주식, ETF: ETF, ETN: ETN
-};
-
-type StockDataType = {
-  first: StockJSONType;
-  second: StockJSONType;
-  date: DateType;
-  option: OptionType;
-};
+import { StockJSONType } from '@type/json-type';
+import { StockDataType } from '@type/stock-type';
+import StockCalendar from '@components/stock-calendar';
 
 function Test() {
   //const accessToken = useSetAccessTokenCookie(); // 인증 토큰
-  //const approvalKey = useSetApprovalKeyCookie();  // 웹소켓 접속 키
+  //const approvalKey = useSetApprovalKeyCookie(); // 웹소켓 접속 키
 
   //const { ws, error, messages } = useWebSocket();
 
@@ -50,7 +34,6 @@ function Test() {
     option: {
       priceType: '0',
       periodType: 'M',
-      stockType: 'J',
     },
   });
 
@@ -84,7 +67,6 @@ function Test() {
               option: {
                 priceType: '0',
                 periodType: 'M',
-                stockType: 'J',
               },
             })
           }
@@ -94,6 +76,7 @@ function Test() {
       </div>
       <div>
         <StockChart stockData={stockData} />
+        <StockCalendar stockData={stockData} />
       </div>
     </div>
   );

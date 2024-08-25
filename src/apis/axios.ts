@@ -11,6 +11,12 @@ instance.interceptors.request.use(
   (config) => {
     config.headers['Content-Type'] = 'application/json; charset=UTF-8';
     config.headers['authorization'] = `Bearer ${getCookie('accessToken')}`;
+    config.headers['appkey'] = import.meta.env.VITE_KIS_INVESTMENT_API_KEY;
+    if (config.url === '/oauth2/Approval') {
+      config.headers['secretkey'] = import.meta.env.VITE_KIS_INVESTMENT_API_SECRET;
+    } else {
+      config.headers['appsecret'] = import.meta.env.VITE_KIS_INVESTMENT_API_SECRET;
+    }
     return config;
   },
   (error) => {
@@ -23,6 +29,7 @@ instance.interceptors.response.use(
     return response;
   },
   (error) => {
+    console.error('Response Error:', error.response); // 에러 응답 확인
     if (axios.isAxiosError(error)) {
       if (error.response) {
         const { data, status } = error.response;

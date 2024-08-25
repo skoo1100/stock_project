@@ -1,25 +1,7 @@
 import ApexCharts from 'react-apexcharts';
 import { usePeriodStockQuery } from '@hooks/react-query/use-query-stock';
-import { formatDateToYYYYMMDD, formatYYYYMMDDToDate } from '@utils/format-date';
-import { StockJSONType } from '@json/json-type';
-
-type DateType = {
-  start: string;
-  end: string;
-};
-
-type OptionType = {
-  priceType: '0' | '1'; // 0: 원주가, 1: 수정주가
-  periodType: 'D' | 'W' | 'M' | 'Y'; // D: Day, W: Week, M: Month, Y: Year
-  stockType: 'J' | 'ETF' | 'ETN'; // J: 주식, ETF: ETF, ETN: ETN
-};
-
-type StockDataType = {
-  first: StockJSONType;
-  second: StockJSONType;
-  date: DateType;
-  option: OptionType;
-};
+import { formatYYYY_MM_DDToYYYYMMDD, formatYYYYMMDDToYYYY_MM_DD } from '@utils/format-date';
+import { StockDataType } from '@type/stock-type';
 
 type StockChartProps = {
   stockData: StockDataType;
@@ -28,38 +10,33 @@ type StockChartProps = {
 const StockChart = ({ stockData }: StockChartProps) => {
   const { data: firstPeriodStockData } = usePeriodStockQuery(
     stockData.first.종목코드 ? stockData.first.종목코드 : '',
-    formatDateToYYYYMMDD(stockData.date?.start),
-    formatDateToYYYYMMDD(stockData.date?.end),
+    formatYYYY_MM_DDToYYYYMMDD(stockData.date?.start),
+    formatYYYY_MM_DDToYYYYMMDD(stockData.date?.end),
     stockData.option.priceType,
     stockData.option.periodType,
-    stockData.option.stockType,
   );
 
   const { data: secondPeriodStockData } = usePeriodStockQuery(
     stockData.second.종목코드 ? stockData.second.종목코드 : '',
-    formatDateToYYYYMMDD(stockData.date?.start),
-    formatDateToYYYYMMDD(stockData.date?.end),
+    formatYYYY_MM_DDToYYYYMMDD(stockData.date?.start),
+    formatYYYY_MM_DDToYYYYMMDD(stockData.date?.end),
     stockData.option.priceType,
     stockData.option.periodType,
-    stockData.option.stockType,
   );
 
   const firstSeriesData = firstPeriodStockData?.output2
     .map((data) => ({
-      x: formatYYYYMMDDToDate(data.stck_bsop_date),
+      x: formatYYYYMMDDToYYYY_MM_DD(data.stck_bsop_date),
       y: [Number(data.stck_oprc), Number(data.stck_hgpr), Number(data.stck_lwpr), Number(data.stck_clpr)],
     }))
     .sort((a, b) => new Date(a.x).getTime() - new Date(b.x).getTime());
 
   const secondSeriesData = secondPeriodStockData?.output2
     .map((data) => ({
-      x: formatYYYYMMDDToDate(data.stck_bsop_date),
+      x: formatYYYYMMDDToYYYY_MM_DD(data.stck_bsop_date),
       y: [Number(data.stck_oprc), Number(data.stck_hgpr), Number(data.stck_lwpr), Number(data.stck_clpr)],
     }))
     .sort((a, b) => new Date(a.x).getTime() - new Date(b.x).getTime());
-
-  console.log(firstSeriesData);
-  console.log(secondSeriesData);
 
   return firstSeriesData || secondSeriesData ? (
     <ApexCharts

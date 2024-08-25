@@ -1,32 +1,9 @@
 import { SetStateAction } from 'react';
-import { StockJSONType } from '@json/json-type';
-
-type DateType = {
-  start: string;
-  end: string;
-};
-
-type OptionType = {
-  priceType: '0' | '1'; // 0: 원주가, 1: 수정주가
-  periodType: 'D' | 'W' | 'M' | 'Y'; // D: Day, W: Week, M: Month, Y: Year
-  stockType: 'J' | 'ETF' | 'ETN'; // J: 주식, ETF: ETF, ETN: ETN
-};
-
-type StockDataType = {
-  first: StockJSONType;
-  second: StockJSONType;
-  date: DateType;
-  option: OptionType;
-};
+import { StockJSONType } from '@type/json-type';
+import { StockDataType, StockDataListType } from '@type/stock-type';
 
 type StockSearchResultProps = {
-  stockDataList:
-    | {
-        kospi?: StockJSONType[];
-        kosdaq?: StockJSONType[];
-        etf: StockJSONType[];
-      }
-    | undefined;
+  stockDataList: StockDataListType;
   setStockData: React.Dispatch<SetStateAction<StockDataType>>;
   choice: 'first' | 'second';
 };
