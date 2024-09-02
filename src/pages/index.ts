@@ -1,3 +1,4 @@
-import Test from '@/pages/test';
+import Root from '@pages/root';
+import Test from '@pages/test';
 
-export { Test };
+export { Root, Test };

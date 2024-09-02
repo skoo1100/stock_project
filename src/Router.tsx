@@ -5,7 +5,9 @@ const Router = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Page.Test />} />
+        <Route path="/" element={<Page.Root />}>
+          <Route index element={<Page.Test />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );

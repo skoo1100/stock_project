@@ -1,4 +1,4 @@
-import Router from './Router';
+import Router from '@/Router';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 function App() {
