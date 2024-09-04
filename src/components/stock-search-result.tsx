@@ -1,25 +1,24 @@
-import { SetStateAction } from 'react';
 import { StockJSONType } from '@type/json-type';
-import { StockDataType, StockDataListType } from '@type/stock-type';
+import { StockDataListType } from '@type/stock-type';
+import { useStockDataStore } from '@stores/stock-data';
 
 type StockSearchResultProps = {
   stockDataList: StockDataListType;
-  setStockData: React.Dispatch<SetStateAction<StockDataType>>;
-  choice: 'first' | 'second';
 };
 
-const StockSearchResult = ({ stockDataList, setStockData, choice }: StockSearchResultProps) => {
-  const handleStockCodeClick = (code: StockJSONType) => {
-    setStockData((prev) => ({
-      ...prev,
-      [choice]: code,
-    }));
+const StockSearchResult = ({ stockDataList }: StockSearchResultProps) => {
+  const { stockData, setStockData } = useStockDataStore();
+
+  const handleStockCodeClick = (item: StockJSONType) => {
+    setStockData({
+      ...stockData,
+      data: item,
+    });
   };
 
   return (
-    <>
-      <ul>
-        {/*
+    <ul>
+      {/*
         {stockDataList &&
           stockDataList.kospi.map((item) => (
             <li key={`kospi-${item.종목코드}`}>
@@ -33,14 +32,13 @@ const StockSearchResult = ({ stockDataList, setStockData, choice }: StockSearchR
             </li>
           ))}
           */}
-        {stockDataList &&
-          stockDataList.etf.map((item) => (
-            <li key={`kospi-${item.종목코드}`}>
-              <button onClick={() => handleStockCodeClick(item)}>{item.종목명}</button>
-            </li>
-          ))}
-      </ul>
-    </>
+      {stockDataList &&
+        stockDataList.etf.map((item) => (
+          <li key={`kospi-${item.종목코드}`}>
+            <button onClick={() => handleStockCodeClick(item)}>{item.종목명}</button>
+          </li>
+        ))}
+    </ul>
   );
 };
 

@@ -1,10 +1,10 @@
 const device = {
-  mobile: '(max-width: 768px)',
-  tablet: '(max-width: 1024px)',
+  //모바일이 가본
+  tablet: '(min-width: 769px)',
+  desktop: '(min-width: 1025px)',
 };
 
 const nav = {
-  width: '100%',
   height: '3rem',
 };
 

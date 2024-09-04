@@ -11,8 +11,7 @@ export type OptionType = {
 };
 
 export type StockDataType = {
-  first: StockJSONType;
-  second: StockJSONType;
+  data: StockJSONType;
   date: DateType;
   option: OptionType;
 };

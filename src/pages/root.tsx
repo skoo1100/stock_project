@@ -1,7 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import NavBar from '@components/nav-bar';
 import GlobalStyle from '@styles/global';
-import { nav } from '@styles/size';
+import { nav, device } from '@styles/size';
 import styled from 'styled-components';
 
 function Root() {
@@ -21,5 +21,15 @@ export default Root;
 const S = {
   Main: styled.main`
     margin-top: ${nav.height};
+    width: 100%;
+
+    @media ${device.tablet} {
+    }
+
+    @media ${device.desktop} {
+      margin-left: 22%;
+      margin-right: 22%;
+      width: 56%;
+    }
   `,
 };

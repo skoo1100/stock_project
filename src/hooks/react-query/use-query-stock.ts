@@ -39,10 +39,9 @@ export const usePeriodStockQuery = (
   endDate?: string, // 조회 종료날짜
   stockPriceType?: '0' | '1', // 0: 원주가, 1: 수정주가
   periodType?: 'D' | 'W' | 'M' | 'Y', // D: Day, W: Week, M: Month, Y: Year
-  stockType?: 'J' | 'ETF' | 'ETN', // J: 주식, ETF: ETF, ETN: ETN
 ) => {
   const query = useQuery<PeriodStockDataType>({
-    queryKey: [QUERY_KEY.periodStock, stockCode, startDate, endDate, stockPriceType, periodType, stockType],
+    queryKey: [QUERY_KEY.periodStock, stockCode, startDate, endDate, stockPriceType, periodType],
     queryFn: async () => await stockRequest.fetchPeriodStock(stockCode, startDate, endDate, stockPriceType, periodType),
   });
   return query;

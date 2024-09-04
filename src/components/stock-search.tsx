@@ -1,18 +1,14 @@
-import { useState, useCallback, SetStateAction } from 'react';
+import { useState, useCallback } from 'react';
 import { debounce } from 'lodash';
-import { OptionType, StockDataType, StockDataListType } from '@type/stock-type';
+import { OptionType, StockDataListType } from '@type/stock-type';
 //import kospiData from '@json/kospi.json';
 //import kosdaqData from '@json/kosdaq.json';
 import etfData from '@json/etf.json';
-import StockSearchResult from './stock-search-result';
+import StockSearchResult from '@components/stock-search-result';
+import { useStockDataStore } from '@stores/stock-data';
 
-type StockSearchProps = {
-  stockData: StockDataType;
-  setStockData: React.Dispatch<SetStateAction<StockDataType>>;
-  choice: 'first' | 'second';
-};
-
-const StockSearch = ({ stockData, setStockData, choice }: StockSearchProps) => {
+const StockSearch = () => {
+  const { stockData, setStockData } = useStockDataStore();
   const [search, setSearch] = useState('');
   const [stockDataList, setStockDataList] = useState<StockDataListType>({
     //kospi: kospiData,
@@ -55,33 +51,33 @@ const StockSearch = ({ stockData, setStockData, choice }: StockSearchProps) => {
   };
 
   const handleStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setStockData((prev) => ({
-      ...prev,
+    setStockData({
+      ...stockData,
       date: {
         start: e.target.value,
-        end: prev.date.end < e.target.value ? e.target.value : prev.date.end,
+        end: stockData.date.end < e.target.value ? e.target.value : stockData.date.end,
       },
-    }));
+    });
   };
 
   const handleEndDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setStockData((prev) => ({
-      ...prev,
+    setStockData({
+      ...stockData,
       date: {
-        ...prev.date,
+        ...stockData.date,
         end: e.target.value,
       },
-    }));
+    });
   };
 
   const handleOptionChange = (type: keyof OptionType, value: OptionType[keyof OptionType]) => {
-    setStockData((prev) => ({
-      ...prev,
+    setStockData({
+      ...stockData,
       option: {
-        ...prev.option,
+        ...stockData.option,
         [type]: value,
       },
-    }));
+    });
   };
 
   return (
@@ -100,7 +96,7 @@ const StockSearch = ({ stockData, setStockData, choice }: StockSearchProps) => {
         <button onClick={() => handleOptionChange('periodType', 'Y')}>년</button>
       </div>
       <div>
-        <StockSearchResult stockDataList={stockDataList} setStockData={setStockData} choice={choice} />
+        <StockSearchResult stockDataList={stockDataList} />
       </div>
     </div>
   );

@@ -15,7 +15,7 @@ const StockCalendar = ({ stockData }: StockCalenderProps) => {
   const [selectDate, setSelectDate] = useState<DateValue>(new Date());
 
   const { data: EtfNavComparisonData } = useEtfNavComparisonQuery(
-    stockData.first.종목코드 ? stockData.first.종목코드 : '',
+    stockData.data.종목코드 ? stockData.data.종목코드 : '',
     formatDateToYYYYMMDD(selectDate && Array.isArray(selectDate) ? selectDate[0] : selectDate),
     formatDateToYYYYMMDD(selectDate && Array.isArray(selectDate) ? selectDate[1] : selectDate),
   );

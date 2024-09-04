@@ -32,8 +32,9 @@
       "@hooks/*": ["src/hooks/*"],
       "@json/*": ["src/json/*"],
       "@pages/*": ["src/pages/*"],
+      "@stores/*": ["src/stores/*"],
       "@styles/*": ["src/styles/*"],
-      "@types/*": ["src/types/*"],
+      "@type/*": ["src/type/*"],
       "@utils/*": ["src/utils/*"],
       "@/*": ["src/*"]
     }

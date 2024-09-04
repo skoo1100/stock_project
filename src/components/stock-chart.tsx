@@ -8,47 +8,28 @@ type StockChartProps = {
 };
 
 const StockChart = ({ stockData }: StockChartProps) => {
-  const { data: firstPeriodStockData } = usePeriodStockQuery(
-    stockData.first.종목코드 ? stockData.first.종목코드 : '',
+  const { data: periodStockData } = usePeriodStockQuery(
+    stockData.data.종목코드 ? stockData.data.종목코드 : '',
     formatYYYY_MM_DDToYYYYMMDD(stockData.date?.start),
     formatYYYY_MM_DDToYYYYMMDD(stockData.date?.end),
     stockData.option.priceType,
     stockData.option.periodType,
   );
 
-  const { data: secondPeriodStockData } = usePeriodStockQuery(
-    stockData.second.종목코드 ? stockData.second.종목코드 : '',
-    formatYYYY_MM_DDToYYYYMMDD(stockData.date?.start),
-    formatYYYY_MM_DDToYYYYMMDD(stockData.date?.end),
-    stockData.option.priceType,
-    stockData.option.periodType,
-  );
-
-  const firstSeriesData = firstPeriodStockData?.output2
+  const seriesData = periodStockData?.output2
     .map((data) => ({
       x: formatYYYYMMDDToYYYY_MM_DD(data.stck_bsop_date),
       y: [Number(data.stck_oprc), Number(data.stck_hgpr), Number(data.stck_lwpr), Number(data.stck_clpr)],
     }))
     .sort((a, b) => new Date(a.x).getTime() - new Date(b.x).getTime());
 
-  const secondSeriesData = secondPeriodStockData?.output2
-    .map((data) => ({
-      x: formatYYYYMMDDToYYYY_MM_DD(data.stck_bsop_date),
-      y: [Number(data.stck_oprc), Number(data.stck_hgpr), Number(data.stck_lwpr), Number(data.stck_clpr)],
-    }))
-    .sort((a, b) => new Date(a.x).getTime() - new Date(b.x).getTime());
-
-  return firstSeriesData || secondSeriesData ? (
+  return seriesData ? (
     <ApexCharts
       type="candlestick"
       series={[
         {
-          name: firstPeriodStockData?.output1.hts_kor_isnm,
-          data: firstSeriesData || [],
-        },
-        {
-          name: secondPeriodStockData?.output1.hts_kor_isnm,
-          data: secondSeriesData || [],
+          name: periodStockData?.output1.hts_kor_isnm,
+          data: seriesData || [],
         },
       ]}
       options={{
@@ -56,8 +37,8 @@ const StockChart = ({ stockData }: StockChartProps) => {
           mode: 'dark',
         },
         chart: {
-          height: '100%',
-          width: '100%',
+          height: '40px',
+          width: '40px',
           toolbar: {
             tools: {
               download: false,
@@ -95,7 +76,7 @@ const StockChart = ({ stockData }: StockChartProps) => {
         },
         xaxis: {
           type: 'category',
-          categories: firstSeriesData?.map((point) => point.x),
+          categories: seriesData?.map((point) => point.x),
           labels: {
             style: {
               colors: '#0c0c0c',
@@ -129,7 +110,7 @@ const StockChart = ({ stockData }: StockChartProps) => {
             fontSize: '10px',
           },
           x: {
-            formatter: (value) => `${firstSeriesData?.[value - 1]?.x ?? ''}`,
+            formatter: (value) => `${seriesData?.[value - 1]?.x ?? ''}`,
           },
           y: {
             formatter: (value) => `$ ${value.toFixed(2)}`,

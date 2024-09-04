@@ -8,6 +8,7 @@ import StockSearch from '@components/stock-search';
 import { StockJSONType } from '@type/json-type';
 import { StockDataType } from '@type/stock-type';
 import StockCalendar from '@components/stock-calendar';
+import { useStockDataStore } from '@stores/stock-data';
 
 function Test() {
   //const accessToken = useSetAccessTokenCookie(); // 인증 토큰
@@ -18,24 +19,7 @@ function Test() {
   //const { data, isLoading, isError, error } = usePeriodStockQuery('010140', '20220411', '20220509');
 
   //console.log(data);
-  const [stockData, setStockData] = useState<StockDataType>({
-    first: {
-      종목코드: '',
-      종목명: '',
-    },
-    second: {
-      종목코드: '',
-      종목명: '',
-    },
-    date: {
-      start: '',
-      end: '',
-    },
-    option: {
-      priceType: '0',
-      periodType: 'M',
-    },
-  });
+  const { stockData, initStockData } = useStockDataStore();
 
   return (
     <div style={{ display: 'flex' }}>
@@ -47,32 +31,8 @@ function Test() {
       </ul>
       */}
       <div style={{ display: 'flex' }}>
-        <StockSearch stockData={stockData} setStockData={setStockData} choice={'first'} />
-        <StockSearch stockData={stockData} setStockData={setStockData} choice={'second'} />
-        <button
-          onClick={() =>
-            setStockData({
-              first: {
-                종목코드: '',
-                종목명: '',
-              },
-              second: {
-                종목코드: '',
-                종목명: '',
-              },
-              date: {
-                start: '',
-                end: '',
-              },
-              option: {
-                priceType: '0',
-                periodType: 'M',
-              },
-            })
-          }
-        >
-          초기화
-        </button>
+        <StockSearch />
+        <button onClick={() => initStockData}>초기화</button>
       </div>
       <div>
         <StockChart stockData={stockData} />
