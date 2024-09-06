@@ -1,4 +1,5 @@
 import { css } from 'styled-components';
+import { device } from './size';
 
 // normalize.css v8.0.1
 const reset = css`
@@ -14,6 +15,18 @@ const reset = css`
   }
   body {
     margin: 0;
+    width: 100vw;
+    overflow-x: hidden;
+
+    @media ${device.desktop} {
+      margin-left: 22%;
+      margin-right: 22%;
+      width: 56%;
+    }
+  }
+  #root {
+    width: 100%;
+    height: 100%;
   }
   main {
     display: block;

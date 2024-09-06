@@ -2,7 +2,7 @@ import { aes256Decode } from '@utils/decode';
 import { getCookie } from '@utils/cookie';
 import { useState, useEffect } from 'react';
 
-function useWebSocket() {
+const useWebSocket = (stockId: string, stockCode: string) => {
   const [ws, setWs] = useState<WebSocket | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [messages, setMessages] = useState<string[]>([]);
@@ -25,8 +25,8 @@ function useWebSocket() {
         },
         body: {
           input: {
-            tr_id: 'H0STCNT0', // 실시간 주식 체결가 요청 ID
-            tr_key: '005930', // 종목 코드
+            tr_id: stockId, // 실시간 주식 체결가 요청 ID
+            tr_key: stockCode, // 종목 코드
           },
         },
       };
@@ -36,7 +36,7 @@ function useWebSocket() {
 
     socket.onmessage = (e) => {
       const receiveData = e.data;
-      //console.log('서버로부터 받은 메시지:', receiveData);
+      console.log('서버로부터 받은 메시지:', receiveData);
 
       // 암호화 데이터 복호화시에 사용
       if (e.data.includes('header')) {
@@ -49,7 +49,7 @@ function useWebSocket() {
       const bodyData = strArray[3];
 
       // 암호화된 데이터일 경우
-      if (strArray[0] === 1) {
+      if (strArray[0] === '1') {
         const decodeData = aes256Decode(iv, encryptKey, bodyData);
 
         // 주식체결통보, 모의투자체결통보
@@ -57,7 +57,7 @@ function useWebSocket() {
         }
       }
       // 암호화되지 않은 데이터일 경우
-      else if (strArray[0] === 0) {
+      else if (strArray[0] === '0') {
         const resultData = bodyData.split('^');
 
         // 주식호가
@@ -67,10 +67,15 @@ function useWebSocket() {
         // 주식 체결가
         if (trId == 'H0STCNT0') {
         }
+
+        //실시간 nav 추이
+        if (trId == 'H0STNAV0') {
+          console.log(resultData[1]);
+        }
       }
       // 첫데이터가 암호화 구분값이 아닌 데이터는 요청에 대한 응답데이터 이거나 heartbeat 데이터
       else {
-        const data = JSON.parse(e.data);
+        //const data = JSON.parse(e.data);
       }
     };
 
@@ -93,6 +98,6 @@ function useWebSocket() {
   }, []);
 
   return { ws, error, messages };
-}
+};
 
 export default useWebSocket;

@@ -83,6 +83,7 @@ const StockSearch = () => {
   return (
     <div>
       <input type="text" value={search} onChange={handleSearchChange} />
+      {/*
       <input type="date" value={stockData.date.start} onChange={handleStartDateChange} />
       <input type="date" value={stockData.date.end} onChange={handleEndDateChange} min={stockData.date.start} />
       <div>
@@ -95,6 +96,7 @@ const StockSearch = () => {
         <button onClick={() => handleOptionChange('periodType', 'M')}>월</button>
         <button onClick={() => handleOptionChange('periodType', 'Y')}>년</button>
       </div>
+      */}
       <div>
         <StockSearchResult stockDataList={stockDataList} />
       </div>

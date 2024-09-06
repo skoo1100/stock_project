@@ -1,12 +1,22 @@
+import { useNavigate } from 'react-router-dom';
 import { device, nav } from '@styles/size';
 import { z_index } from '@styles/z-index';
 import styled from 'styled-components';
 
 const NavBar = () => {
+  const navigate = useNavigate();
+
   return (
-    <S.NavContainer>
+    <S.NavContainer onClick={() => navigate('/')}>
       <S.NavLogo>양봉호</S.NavLogo>
-      <S.NavSearch>검색</S.NavSearch>
+      <S.NavSearchButton
+        onClick={(e) => {
+          e.stopPropagation();
+          navigate('/search');
+        }}
+      >
+        검색
+      </S.NavSearchButton>
     </S.NavContainer>
   );
 };
@@ -18,7 +28,6 @@ const S = {
     display: flex;
     justify-content: space-between;
     align-items: center;
-
     position: fixed;
     top: 0;
     left: 0;
@@ -43,7 +52,7 @@ const S = {
     width: 4rem;
   `,
 
-  NavSearch: styled.div`
+  NavSearchButton: styled.button`
     text-align: center;
     background: var(--gray01);
     width: 4rem;

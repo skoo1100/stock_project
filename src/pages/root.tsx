@@ -27,9 +27,6 @@ const S = {
     }
 
     @media ${device.desktop} {
-      margin-left: 22%;
-      margin-right: 22%;
-      width: 56%;
     }
   `,
 };

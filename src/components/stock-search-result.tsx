@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { StockJSONType } from '@type/json-type';
 import { StockDataListType } from '@type/stock-type';
 import { useStockDataStore } from '@stores/stock-data';
@@ -7,6 +8,7 @@ type StockSearchResultProps = {
 };
 
 const StockSearchResult = ({ stockDataList }: StockSearchResultProps) => {
+  const navigate = useNavigate();
   const { stockData, setStockData } = useStockDataStore();
 
   const handleStockCodeClick = (item: StockJSONType) => {
@@ -14,6 +16,7 @@ const StockSearchResult = ({ stockDataList }: StockSearchResultProps) => {
       ...stockData,
       data: item,
     });
+    navigate(`/stock-item/${stockData.data.종목코드}`);
   };
 
   return (

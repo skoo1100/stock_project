@@ -1,36 +1,32 @@
-import { useState } from 'react';
-import { useEtfNavComparisonQuery } from '@hooks/react-query/use-query-stock';
-import { formatDateToYYYY_MM_DD, formatDateToYYYYMMDD } from '@utils/format-date';
-import { StockDataType } from '@type/stock-type';
-import { DateValue } from '@type/date-type';
-import Calendar from 'react-calendar';
+import { SetStateAction, useState } from 'react';
+import Calendar, { TileDisabledFunc } from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
+import { DateValue } from '@type/date-type';
 import styled from 'styled-components';
 
 type StockCalenderProps = {
-  stockData: StockDataType;
+  selectDate: DateValue;
+  setSelectDate: React.Dispatch<SetStateAction<DateValue>>;
 };
 
-const StockCalendar = ({ stockData }: StockCalenderProps) => {
-  const [selectDate, setSelectDate] = useState<DateValue>(new Date());
-
-  const { data: EtfNavComparisonData } = useEtfNavComparisonQuery(
-    stockData.data.종목코드 ? stockData.data.종목코드 : '',
-    formatDateToYYYYMMDD(selectDate && Array.isArray(selectDate) ? selectDate[0] : selectDate),
-    formatDateToYYYYMMDD(selectDate && Array.isArray(selectDate) ? selectDate[1] : selectDate),
-  );
+const StockCalendar = ({ selectDate, setSelectDate }: StockCalenderProps) => {
+  const [selectOption, setSelectOption] = useState(false);
 
   const handleDateChange = (date: DateValue) => {
     setSelectDate(date);
   };
 
-  console.log(EtfNavComparisonData);
+  const disableDates: TileDisabledFunc = ({ date, view }) => {
+    // "view"가 "month"일 때만 비활성화 (연도, 월 선택 시는 활성화)
+    const isAfterToday = date > new Date();
+    return isAfterToday;
+  };
 
   return (
     <S.StyledCalendarWrapper>
       <S.StyledCalendar
         value={selectDate}
-        selectRange={false}
+        selectRange={selectOption}
         onChange={handleDateChange}
         formatDay={(locale, date) => date.getDate().toString()}
         formatYear={(locale, date) => date.getFullYear().toString()}
@@ -40,20 +36,11 @@ const StockCalendar = ({ stockData }: StockCalenderProps) => {
         next2Label={'>>'}
         prev2Label={'<<'}
         minDetail="year"
+        tileDisabled={disableDates}
       />
-      <div>
-        <div>{`선택 날짜: ${formatDateToYYYY_MM_DD(selectDate as Date)}`}</div>
-        <div>주식 정보</div>
-        {EtfNavComparisonData ? (
-          <div>
-            {EtfNavComparisonData.output.map((item, index) => (
-              <div key={index}>
-                <div>{`데이터 리스트 ${index + 1}: ${JSON.stringify(item)}`}</div>
-              </div>
-            ))}
-          </div>
-        ) : null}
-      </div>
+      <S.OptionSelectButton onClick={() => setSelectOption(!selectOption)}>
+        {selectOption ? '단일 날짜 선택' : '범위 선택'}
+      </S.OptionSelectButton>
     </S.StyledCalendarWrapper>
   );
 };
@@ -63,9 +50,16 @@ export default StockCalendar;
 const S = {
   StyledCalendarWrapper: styled.div`
     width: 100%;
+    overflow-x: hidden; /* 수평 스크롤 방지 */
     display: flex;
     justify-content: center;
     position: relative;
+    box-sizing: border-box; /* 패딩과 보더 포함하여 너비 계산 */
+    padding: 0 10px; /* 좌우 여백 추가 (필요 시) */
   `,
-  StyledCalendar: styled(Calendar)``,
+  StyledCalendar: styled(Calendar)`
+    width: 100%; /* Calendar의 너비를 100%로 설정 */
+    max-width: 100%; /* Calendar의 최대 너비를 제한 */
+  `,
+  OptionSelectButton: styled.button``,
 };

@@ -1,4 +1,6 @@
 import Root from '@pages/root';
-import Test from '@pages/test';
+import Main from '@pages/main';
+import Search from '@pages/search';
+import StockItem from '@pages/stock-item';
 
-export { Root, Test };
+export { Root, Main, Search, StockItem };
